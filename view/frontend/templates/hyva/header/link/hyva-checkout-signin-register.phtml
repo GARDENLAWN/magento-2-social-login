@@ -40,7 +40,7 @@ $popupLogin     = $helperData->getPopupLogin();
 <?php if ($viewModel->getCustomerSession()->isLoggedIn() === false): ?>
     <div class="text-base leading-8">
     <?php if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
-        <a onclick="onClickLogin()" href="#">
+        <a id="checkout-sign-in-link" href="#">
             <?= $escaper->escapeHtml(__('Sign in')) ?>
         </a>
 
@@ -48,7 +48,7 @@ $popupLogin     = $helperData->getPopupLogin();
             &frasl;
         </span>
 
-        <a href="#" onclick="onClickRegister()">
+        <a id="checkout-register-link" href="#">
             <?= $escaper->escapeHtml(__('Create an Account')) ?>
         </a>
     <?php else: ?>
@@ -80,6 +80,19 @@ $popupLogin     = $helperData->getPopupLogin();
             modal.classList.add('<?= /* @noEscape */ $popupEffect ?>-appear');
             openMyDialog();
         }
+
+        <?php if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('checkout-sign-in-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                onClickLogin();
+            });
+            document.getElementById('checkout-register-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                onClickRegister();
+            });
+        });
+        <?php endif; ?>
     </script>
 <?php $hyvaCsp->registerInlineScript() ?>
 <?php endif ?>

@@ -38,24 +38,24 @@ $label       = $block->getLabel() ? $block->getLabel() : __('Create an Account')
 $helperData  = $this->helper(\Mageplaza\SocialLogin\Helper\Data::class);
 $popupEffect = $helperData->getPopupEffect();
 $popupLogin  = $helperData->getPopupLogin();
+$registerId  = $escaper->escapeHtmlAttr($block->getNameInLayout());
 ?>
 
 <?php if ($customerRegistration->isAllowed()): ?>
     <?php
     if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
         <div>
-            <a id="<?= $escaper->escapeHtmlAttr($block->getNameInLayout()) ?>"
+            <a id="<?= $registerId ?>"
                class="block px-4 py-2 lg:px-5 lg:py-2 hover:bg-gray-100"
                href="#"
                title="<?= $escaper->escapeHtmlAttr($label) ?>"
-               onclick="onClickRegister()"
             >
                 <?= $escaper->escapeHtml($label) ?>
             </a>
         </div>
     <?php else: ?>
         <div>
-            <a id="<?= $escaper->escapeHtmlAttr($block->getNameInLayout()) ?>"
+            <a id="<?= $registerId ?>"
                class="block px-4 py-2 lg:px-5 lg:py-2 hover:bg-gray-100"
                href="<?= $escaper->escapeUrl($customerRegistration->getRegisterUrl()) ?>"
                title="<?= $escaper->escapeHtmlAttr($label) ?>"
@@ -72,8 +72,15 @@ $popupLogin  = $helperData->getPopupLogin();
         const modal = document.querySelector('.wrap-modal-login');
         modal.classList.add('<?= /* @noEscape */ $popupEffect ?>-appear');
         openMyDialog();
-
-
     }
+
+    <?php if ($customerRegistration->isAllowed() && $popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('<?= $registerId ?>').addEventListener('click', function(event) {
+            event.preventDefault();
+            onClickRegister();
+        });
+    });
+    <?php endif; ?>
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>

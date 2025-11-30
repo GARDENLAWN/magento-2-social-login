@@ -34,9 +34,10 @@ $availableSocials = $block->getAvailableSocials();
             <div class="block-content">
                 <?php foreach ($availableSocials as $key => $social): ?>
                     <div class="actions-toolbar social-btn <?= /* @noEscape */ $key ?>-login">
-                        <a class="btn btn-block btn-social btn-<?= /* @noEscape */ $block->getBtnKey($key) ?>"
-                           data-mage-init='{"socialProvider": {"url": "<?= /* @noEscape */ $social['login_url'] ?>", "label": "<?= /* @noEscape */ __('Login By %1', $social['label']) ?>"}}'
-                            onclick='clickLoginSocial("<?= /* @noEscape */ $social['login_url'] ?>","<?= /* @noEscape */ $social['label'] ?>")'
+                        <a class="btn btn-block btn-social btn-<?= /* @noEscape */ $block->getBtnKey($key) ?> social-login-btn"
+                           href="#"
+                           data-login-url="<?= /* @noEscape */ $social['login_url'] ?>"
+                           data-label="<?= /* @noEscape */ $social['label'] ?>"
                         >
                             <span class="fa fa-<?= /* @noEscape */ $block->getBtnKey($key) ?>"></span>
                             <?= /* @noEscape */ __('Sign in with %1', $social['label']) ?>
@@ -71,6 +72,16 @@ $availableSocials = $block->getAvailableSocials();
             window.open(login_url + '?' + currentTime, label, getPopupParams());
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('#mp-popup-social-content .social-login-btn').forEach(function(element) {
+                element.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    var loginUrl = this.getAttribute('data-login-url');
+                    var label = this.getAttribute('data-label');
+                    clickLoginSocial(loginUrl, label);
+                });
+            });
+        });
     </script>
 <?php $hyvaCsp->registerInlineScript() ?>
 <?php endif; ?>

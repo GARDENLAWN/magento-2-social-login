@@ -33,12 +33,12 @@ $modalViewModel = $viewModels->require(\Hyva\Theme\ViewModel\Modal::class);
 $helperData     = $this->helper(\Mageplaza\SocialLogin\Helper\Data::class);
 $popupEffect    = $helperData->getPopupEffect();
 $popupLogin     = $helperData->getPopupLogin();
+$signInId       = $escaper->escapeHtmlAttr($block->getNameInLayout());
 ?>
 <?php if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
     <div>
-        <a id="<?= $escaper->escapeHtmlAttr($block->getNameInLayout()) ?>"
+        <a id="<?= $signInId ?>"
            class="block px-4 py-2 lg:px-5 lg:py-2 hover:bg-gray-100"
-           onclick="onClick()"
            href="#"
            title="<?= $escaper->escapeHtmlAttr($label) ?>"
         >
@@ -47,13 +47,8 @@ $popupLogin     = $helperData->getPopupLogin();
     </div>
 <?php else: ?>
     <div>
-        <a id="<?= $escaper->escapeHtmlAttr($block->getNameInLayout()) ?>"
+        <a id="<?= $signInId ?>"
            class="block px-4 py-2 lg:px-5 lg:py-2 hover:bg-gray-100"
-           onclick="hyva.setCookie && hyva.setCookie(
-                   '<?= $escaper->escapeJs(Redirect::LOGIN_REDIRECT_URL) ?>',
-                   window.location.href,
-                   1
-                   )"
            href="<?= $escaper->escapeUrl($block->getUrl('customer/account/index')) ?>"
            title="<?= $escaper->escapeHtmlAttr($label) ?>"
         >
@@ -71,5 +66,22 @@ $popupLogin     = $helperData->getPopupLogin();
         openMyDialog();
 
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
+        document.getElementById('<?= $signInId ?>').addEventListener('click', function(event) {
+            event.preventDefault();
+            onClick();
+        });
+        <?php else: ?>
+        document.getElementById('<?= $signInId ?>').addEventListener('click', function() {
+            hyva.setCookie && hyva.setCookie(
+                '<?= $escaper->escapeJs(Redirect::LOGIN_REDIRECT_URL) ?>',
+                window.location.href,
+                1
+            )
+        });
+        <?php endif; ?>
+    });
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
