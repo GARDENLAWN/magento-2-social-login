@@ -259,96 +259,79 @@ $translateYvalue = $isGDPRTac ? '5%' : '30%' ;
 
 
 <script type="text/javascript">
-    let popup = ``;
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('mageplazaSocialLoginHyvaHeaderModal', () => ({
+            ...hyva.modal(),
+            init() {
+                window.openMyDialog = (event) => {
+                    this.show('my-dialog', event);
+                    setTimeout(() => {
+                        this.onOpenPopup();
+                    }, 50);
+                };
 
-    function handleHideModalClickOutSide() {
-        let popup_test     = document.getElementById("popup_test");
-        let test           = document.getElementById("test");
-        test.style.display = 'block';
-        popup_test.append(test);
-        popup_test.onclick;
-        popup_test.addEventListener('click', function (e) {
-            if (e.target === test) {
+                window.hideMyDialog = (event) => {
+                    this.hide('my-dialog', event);
+                };
+
+                let popup_test = document.getElementById("popup_test");
+                let test = document.getElementById("test");
+                test.style.display = 'block';
+                popup_test.append(test);
+                popup_test.addEventListener('click', (e) => {
+                    if (e.target === test) {
+                        const modal = document.querySelector('.wrap-modal-login');
+                        modal.classList.remove('<?= /* @noEscape */ $popupEffect ?>-appear');
+                        modal.classList.add('<?= /* @noEscape */ $popupEffect ?>-disappear');
+                        setTimeout(() => {
+                            modal.classList.remove('<?= /* @noEscape */ $popupEffect ?>-disappear');
+                            hideMyDialog();
+                        }, 300);
+                    }
+                });
+
+                document.querySelector('#social-login-popup .mfp-close').addEventListener('click', () => {
+                    this.closeModal();
+                });
+            },
+            onOpenPopup() {
+                this.scrollButtonContent();
+            },
+            closeModal() {
                 const modal = document.querySelector('.wrap-modal-login');
                 modal.classList.remove('<?= /* @noEscape */ $popupEffect ?>-appear');
                 modal.classList.add('<?= /* @noEscape */ $popupEffect ?>-disappear');
-                setTimeout(()=>{
+                setTimeout(() => {
                     modal.classList.remove('<?= /* @noEscape */ $popupEffect ?>-disappear');
                     hideMyDialog();
+                }, 300);
+            },
+            scrollButtonContent() {
+                const blockContainers = document.querySelectorAll('.social-login.block-container');
 
-                },300);
+                blockContainers.forEach(container => {
+                    if (window.getComputedStyle(container).display !== 'none') {
+                        const blockContent = container.querySelector('.block-content');
+                        const popupContent = document.querySelector('#mp-popup-social-content .block-content');
+
+                        if (blockContent && popupContent) {
+                            let blockContentHeight = blockContent.offsetHeight || blockContent.scrollHeight;
+                            if (window.innerWidth <= 768) {
+                                blockContentHeight = Math.min(blockContentHeight, 180);
+                            }
+
+                            if (blockContentHeight > 25) {
+                                popupContent.style.maxHeight = `${blockContentHeight - 25}px`;
+                                popupContent.style.overflow = 'auto';
+                            }
+                        }
+                    }
+                });
+            },
+            mageplazaSocialLoginHyvaHeaderModalInit10() {
+                return this.init()
             }
-        });
-    };
-    handleHideModalClickOutSide();
-
-    function closeModal () {
-        const modal = document.querySelector('.wrap-modal-login');
-        modal.classList.remove('<?= /* @noEscape */ $popupEffect ?>-appear');
-        modal.classList.add('<?= /* @noEscape */ $popupEffect ?>-disappear');
-        setTimeout(()=>{
-            modal.classList.remove('<?= /* @noEscape */ $popupEffect ?>-disappear');
-            hideMyDialog();
-        },300);
-    };
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelector('#social-login-popup .mfp-close').addEventListener('click', function() {
-            closeModal();
-        });
+        }));
     });
-
-    function scrollButtonContent() {
-        const blockContainers = document.querySelectorAll('.social-login.block-container');
-
-        blockContainers.forEach(container => {
-            if (window.getComputedStyle(container).display !== 'none') {
-                const blockContent = container.querySelector('.block-content');
-                const popupContent = document.querySelector('#mp-popup-social-content .block-content');
-
-                if (blockContent && popupContent) {
-                    let blockContentHeight = blockContent.offsetHeight || blockContent.scrollHeight;
-                    if(window.innerWidth <= 768){
-                        blockContentHeight = Math.min(blockContentHeight, 180);
-                    }
-
-                    if (blockContentHeight > 25) {
-                        popupContent.style.maxHeight = `${blockContentHeight - 25}px`;
-                        popupContent.style.overflow = 'auto';
-                    }
-                }
-            }
-        });
-    }
-
-</script><script>
-<?php $hyvaCsp->registerInlineScript() ?>
-<?php /** Generated with hyva-csp-helper.php */ ?>
-function mageplazaSocialLoginHyvaHeaderModal() {
-    return Object.assign(
-        {
-    ...hyva.modal(),
-    init() {
-        window.openMyDialog = function (event) {
-            show('my-dialog', event);
-            setTimeout(() => {
-                this.onOpenPopup();
-            }, 50);
-        }.bind(this);
-
-        window.hideMyDialog = function (event) {
-            hide('my-dialog', event);
-        }.bind(this);
-    },
-    onOpenPopup() {
-        scrollButtonContent()
-    }
-}
-        ,{
-            ['mageplazaSocialLoginHyvaHeaderModalInit10']() {return this.init()},
-        }
-    )
-}
-window.addEventListener('alpine:init', () => Alpine.data('mageplazaSocialLoginHyvaHeaderModal', mageplazaSocialLoginHyvaHeaderModal), {once: true});
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>

@@ -68,20 +68,25 @@ $signInId       = $escaper->escapeHtmlAttr($block->getNameInLayout());
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        <?php if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
-        document.getElementById('<?= $signInId ?>').addEventListener('click', function(event) {
-            event.preventDefault();
-            onClick();
-        });
-        <?php else: ?>
-        document.getElementById('<?= $signInId ?>').addEventListener('click', function() {
-            hyva.setCookie && hyva.setCookie(
-                '<?= $escaper->escapeJs(Redirect::LOGIN_REDIRECT_URL) ?>',
-                window.location.href,
-                1
-            )
-        });
-        <?php endif; ?>
+        const signInButton = document.getElementById('<?= $signInId ?>');
+        if (signInButton) {
+            <?php if ($popupLogin === 'popup_login' && $helperData->isEnabled()): ?>
+            signInButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                onClick();
+            });
+            <?php else: ?>
+            signInButton.addEventListener('click', function() {
+                if (hyva.setCookie) {
+                    hyva.setCookie(
+                        '<?= $escaper->escapeJs(Redirect::LOGIN_REDIRECT_URL) ?>',
+                        window.location.href,
+                        1
+                    );
+                }
+            });
+            <?php endif; ?>
+        }
     });
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
