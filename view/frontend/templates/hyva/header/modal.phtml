@@ -323,16 +323,16 @@ function mageplazaSocialLoginHyvaHeaderModal() {
         {
     ...hyva.modal(),
     init() {
-        window.openMyDialog = function (this.event) {
-            show('my-dialog', this.event);
+        window.openMyDialog = function (event) {
+            show('my-dialog', event);
             setTimeout(() => {
-                onOpenPopup();
+                this.onOpenPopup();
             }, 50);
-        }.bind(this.this);
+        }.bind(this);
 
-        window.hideMyDialog = function (this.event) {
-            hide('my-dialog', this.event);
-        }.bind(this.this);
+        window.hideMyDialog = function (event) {
+            hide('my-dialog', event);
+        }.bind(this);
     },
     onOpenPopup() {
         scrollButtonContent()
