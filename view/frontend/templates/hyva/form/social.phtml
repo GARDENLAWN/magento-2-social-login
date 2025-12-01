@@ -19,21 +19,34 @@
  * @license     https://www.mageplaza.com/LICENSE.txt
  */
 
-/** @var Mageplaza\SocialLogin\Block\Popup\Social $block */
+/** @var Social $block */
+
+use Mageplaza\SocialLogin\Block\Popup\Social;
+use Mageplaza\SocialLogin\Helper\Data;
 
 $availableSocials = $block->getAvailableSocials();
 $childBlock       = $block->getChildBlock('request.info');
 $position         = $block->getData('position');
 
-$helperData  = $this->helper(\Mageplaza\SocialLogin\Helper\Data::class);
+$helperData  = $this->helper(Data::class);
 
 if ($block->canShow($position) && sizeof($availableSocials) && $helperData->isEnabled()):
     ?>
+    <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">
+                <?= $block->escapeHtml(__('Or log in with')) ?>
+            </span>
+        </div>
+    </div>
     <div class="block social-login-authentication-channel account-social-login">
-        <div class="block-content">
+        <div class="grid gap-3">
             <?php foreach ($availableSocials as $key => $social): ?>
                 <div class="actions-toolbar social-btn social-btn-actions-toolbar <?= /* @noEscape */ $key ?>-login">
-                    <a class="btn btn-block btn-social btn-<?= /* @noEscape */$block->getBtnKey($key) ?> social-login-btn"
+                    <a class="btn btn-block btn-social btn-<?= /* @noEscape */$block->getBtnKey($key) ?> social-login-btn w-full"
                        href="#"
                        data-login-url="<?= /* @noEscape */ $social['login_url'] ?>"
                        data-label="<?= /* @noEscape */ $social['label'] ?>"
@@ -104,4 +117,3 @@ if ($block->canShow($position) && sizeof($availableSocials) && $helperData->isEn
         });
     });
 </script>
-<?php $hyvaCsp->registerInlineScript() ?>
