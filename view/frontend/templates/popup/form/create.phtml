@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Mageplaza
@@ -28,7 +29,8 @@
         <div class="block-content">
             <?= $block->getChildHtml('form_fields_before') ?>
             <?= $block->getChildHtml('customer.form.register.extra') ?>
-            <form class="form-customer-create" id="social-form-create">
+            <form class="form-customer-create" id="social-form-create"  x-data="mageplazaSocialLoginHyvaPopupFormCreate"
+                  @submit.prevent="mageplazaSocialLoginHyvaPopupFormCreateSubmitPrevent12">
                 <fieldset class="fieldset create info">
                     <input type="hidden" name="success_url" value="<?= /* @noEscape */ $block->getSuccessUrl() ?>"/>
                     <input type="hidden" name="error_url" value="<?= /* @noEscape */ $block->getErrorUrl() ?>"/>
@@ -39,7 +41,8 @@
                             <input type="email" name="email" id="email_address_create"
                                    value="<?= $block->escapeHtml($block->getFormData()->getEmail()) ?>"
                                    title="<?= /* @noEscape */ __('Email') ?>" class="input-text"
-                                   data-validate="{required:true, 'validate-email':true}"/>
+                                   data-validate='{"required": true, "email": true}'
+
                         </div>
                     </div>
                     <?php if ($block->isNewsletterEnabled()): ?>
@@ -59,23 +62,7 @@
                         <div class="field date field-dob">
                             <label class="label" for="dob"><span><?= /* @noEscape */ __('Date of Birth') ?></span></label>
                             <div class="control customer-dob">
-                                <input type="text" name="dob" id="mp_sociallogin_dob" value="" class="" />
-                                <script type="text/javascript">
-                                    require(["jquery", "mage/calendar"], function($){
-                                        $("#mp_sociallogin_dob").calendar({
-                                            showsTime: false,
-                                            dateFormat: "M/d/Y",
-                                            buttonImage: "<?= /* @noEscape */ $_dob->getViewFileUrl('Magento_Theme::calendar.png')?>",
-                                            yearRange: "-120y:c+nn",
-                                            buttonText: "Select Date",
-                                            maxDate: "-1d",
-                                            changeMonth: true,
-                                            changeYear: true,
-                                            showOn: "both"
-                                        })
-                                    });
-                                </script>
-<?php $hyvaCsp->registerInlineScript() ?>
+                                <input type="text" name="dob" id="mp_sociallogin_dob" value="" class="">
                             </div>
                         </div>
                     <?php endif ?>
@@ -92,7 +79,7 @@
                     <fieldset class="fieldset address">
                         <legend class="legend"><span><?= /* @noEscape */ __('Address Information') ?></span></legend>
                         <br>
-                        <input type="hidden" name="create_address" value="1"/>
+                        <input type="hidden" name="create_address" value="1">
                         <div class="field company">
                             <label for="company" class="label"><span><?= /* @noEscape */ __('Company') ?></span></label>
                             <div class="control">
@@ -193,7 +180,8 @@
                         <div class="control">
                             <input type="password" name="password" id="password-social"
                                    title="<?= /* @noEscape */ __('Password') ?>" class="input-text"
-                                   data-validate="{required:true, 'validate-password':true}" autocomplete="off"/>
+                                   data-validate='{"required": true , "password": true}'
+                                  autocomplete="off" />
                         </div>
                     </div>
                     <div class="field confirmation required">
@@ -202,71 +190,106 @@
                         <div class="control">
                             <input type="password" name="password_confirmation"
                                    title="<?= /* @noEscape */ __('Confirm Password') ?>" id="password-confirmation-social"
-                                   class="input-text" data-validate="{required:true, equalTo:'#password-social'}"
+                                   class="input-text"
+                                   data-validate='{"required": true , "equalTo": "password"}'
                                    autocomplete="off"/>
                         </div>
                     </div>
                     <?= $block->getChildHtml('form_additional_info') ?>
                 </fieldset>
-                <div class="actions-toolbar">
-                    <div class="primary">
-                        <button type="button" id="button-create-social" class="action create primary"
+                <div class="actions-toolbar w-full">
+                    <div class="primary inline-block w-full">
+                        <button type="submit" id="button-create-social" class="action primary md:w-auto w-full mb-1"
                                 title="<?= /* @noEscape */ __('Create an Account') ?>">
                             <span><?= /* @noEscape */ __('Create an Account') ?></span></button>
-                        <div class="secondary">
+                        <div class="secondary inline-block ml-3 text-center">
                             <a class="action back" href="#"><span><?= /* @noEscape */ __('Back') ?></span></a>
                         </div>
                     </div>
                 </div>
             </form>
-            <script>
-                require([
-                    'jquery',
-                    'mage/mage'
-                ], function ($) {
-                    var dataForm = $('#social-form-create'),
-                        ignore = <?= $_dob->isEnabled() ? '\'input[id$="full"]\'' : 'null' ?>;
-
-                    dataForm.mage('validation', {
-                        <?php if ($_dob->isEnabled()): ?>
-                        errorPlacement: function (error, element) {
-                            if (element.prop('id').search('full') !== -1) {
-                                var dobElement = $(element).parents('.customer-dob'),
-                                    errorClass = error.prop('class');
-                                error.insertAfter(element.parent());
-                                dobElement.find('.validate-custom').addClass(errorClass)
-                                    .after('<div class="' + errorClass + '"></div>');
-                            } else {
-                                error.insertAfter(element);
-                            }
-                        },
-                        ignore: ':hidden:not(' + ignore + ')'
-                        <?php else: ?>
-                        ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
-                        <?php endif ?>
-                    });
-                });
-            </script>
-<?php $hyvaCsp->registerInlineScript() ?>
-            <?php if ($block->getShowAddressFields()): ?>
-                <script type="text/x-magento-init">
-                    {
-                        "#country": {
-                            "regionUpdater": {
-                                "optionalRegionAllowed": <?= $block->getConfig('general/region/display_all') ? 'true' : 'false' ?>,
-                                "regionListId": "#region_id",
-                                "regionInputId": "#region",
-                                "postcodeId": "#zip",
-                                "form": "#form-validate",
-                                "regionJson": <?= /* @noEscape */ $this->helper('Magento\Directory\Helper\Data')->getRegionJson() ?>,
-                                "defaultRegion": "<?= /* @noEscape */ $block->getFormData()->getRegionId() ?>",
-                                "countriesWithOptionalZip": <?= /* @noEscape */ $this->helper('Magento\Directory\Helper\Data')->getCountriesWithOptionalZip(true) ?>
-                            }
-                        }
-                    }
-
-                </script>
-            <?php endif; ?>
         </div>
     </div>
+
+    <script>
+        function mageplazaSocialLoginHyvaPopupFormCreate() {
+            return {
+                errors: 0,
+                hasCaptchaToken: 0,
+                showPassword: false,
+                displayErrorMessage: false,
+                errorMessages: [],
+
+                init() {
+                    Object.assign(this, hyva.formValidation(this.$el));
+                },
+
+                setErrorMessages (messages) {
+                    this.errorMessages       = [messages];
+                    this.displayErrorMessage = this.errorMessages.length
+                },
+                submitForm () {
+                    this.validate()
+                    .then(() => {
+                        removeMsg(".social-login.create .block-content", "message-success success message");
+
+                        removeMsg(".social-login.create .block-content", "message-error error message");
+                        // do not rename $form, the variable is the expected name in the recaptcha output
+                        if (this.errors === 0) {
+                            this.dispatchCreateRequest();
+                        }
+                    })
+                    .catch((invalid) => {
+                        if (invalid.length > 0) {
+                            invalid[0].focus();
+                        }
+                    });
+                },
+                dispatchCreateRequest: function () {
+                    appendLoading(".social-login.create .block-content");
+                    var createForm = document.querySelector('#social-form-create');
+                    var formData = new FormData(createForm);
+                    var parameters = new URLSearchParams(formData).toString();
+
+                    fetch(socialPopupForm.createFormUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                        body: parameters,
+                        }
+                    ).then(response => {
+                            return response.json();
+                        }
+                    ).then(data => {
+                        addMsg(".social-login.forgot .block-content", data);
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else if (data.success) {
+                            addMsg(".social-login.create .block-content", data);
+                            if (data.url === '' || data.url == null) {
+                                window.location.reload(true);
+                            } else {
+                                window.location.href = data.url;
+                            }
+                        } else {
+                            addMsg(".social-login.create .block-content", data);
+                        }
+
+                    }).catch(error => {
+
+                    });
+                    removeLoading(".social-login.create .block-content")
+                },
+                ['mageplazaSocialLoginHyvaPopupFormCreateSubmitPrevent12'](event) {this.submitForm();},
+            }
+        }
+    </script>
+<?php $hyvaCsp->registerInlineScript() ?>
 </div>
+<script>
+<?php /** Generated with hyva-csp-helper.php */ ?>
+window.addEventListener('alpine:init', () => Alpine.data('mageplazaSocialLoginHyvaPopupFormCreate', mageplazaSocialLoginHyvaPopupFormCreate), {once: true});
+</script>
+<?php $hyvaCsp->registerInlineScript() ?>
