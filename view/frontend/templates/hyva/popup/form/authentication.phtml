@@ -218,13 +218,19 @@ $escaper = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Fra
 
                     const recaptchaTokenField = '<?= $escaper->escapeJs($recaptcha->getResultTokenFieldName('customer_login')) ?>';
                     const recaptchaToken = form.querySelector('[name="' + recaptchaTokenField + '"]');
-                    if (recaptchaToken) {
+
+                    let url = socialPopupForm.formLoginUrl;
+                    if (recaptchaToken && recaptchaToken.value) {
                         bodyFields[recaptchaTokenField] = recaptchaToken.value;
+
+                        // Append to URL as well to satisfy standard RequestHandler if needed
+                        const separator = url.includes('?') ? '&' : '?';
+                        url += separator + recaptchaTokenField + '=' + encodeURIComponent(recaptchaToken.value);
                     }
 
                     appendLoading('.social-login.authentication .social-login-customer-authentication .block-content');
 
-                    fetch(socialPopupForm.formLoginUrl, {
+                    fetch(url, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
