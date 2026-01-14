@@ -29,7 +29,7 @@
         <div class="block-content">
             <?= $block->getChildHtml('form_fields_before') ?>
             <?= $block->getChildHtml('customer.form.register.extra') ?>
-            <form class="form-customer-create" id="social-form-create"  x-data="mageplazaSocialLoginHyvaPopupFormCreate"
+            <form class="form-customer-create" id="social-form-create"  x-data="mageplazaSocialLoginHyvaPopupFormCreate()"
                   @submit.prevent="mageplazaSocialLoginHyvaPopupFormCreateSubmitPrevent12">
                 <fieldset class="fieldset create info">
                     <input type="hidden" name="success_url" value="<?= /* @noEscape */ $block->getSuccessUrl() ?>"/>
@@ -213,7 +213,7 @@
 
     <script>
 
-        function initCustomerCreateForm () {
+        function initSocialLoginCustomerCreateForm () {
             return {
                 errors: 0,
                 hasCaptchaToken: 0,
@@ -287,9 +287,22 @@
 </div>
 <script>
 <?php /** Generated with hyva-csp-helper.php */ ?>
-function mageplazaSocialLoginHyvaPopupFormCreate() {
+function mageplazaSocialLoginHyvaPopupFormCreate(element) {
+    var formElement = element;
+    if (!formElement) {
+        formElement = document.getElementById('social-form-create');
+    }
+
+    var baseData = initSocialLoginCustomerCreateForm();
+
+    if (!formElement || !formElement.tagName || formElement.tagName !== 'FORM') {
+        console.warn('Mageplaza Social Login: Form element not found or invalid');
+        baseData.validate = () => Promise.resolve();
+        return baseData;
+    }
+
     return Object.assign(
-        Object.assign(hyva.formValidation(this.$el), initCustomerCreateForm())
+        Object.assign(hyva.formValidation(formElement), baseData)
         ,{
             ['mageplazaSocialLoginHyvaPopupFormCreateSubmitPrevent12'](event) {this.submitForm();},
         }
